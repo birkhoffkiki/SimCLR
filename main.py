@@ -162,7 +162,7 @@ def main(gpu, args):
 
 
 if __name__ == "__main__":
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     parser = argparse.ArgumentParser(description="SimCLR")
     config = yaml_config_hook("./config/config.yaml")
     for k, v in config.items():

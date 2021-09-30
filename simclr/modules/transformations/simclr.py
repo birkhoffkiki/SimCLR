@@ -15,7 +15,9 @@ class TransformsSimCLR:
         )
         self.train_transform = torchvision.transforms.Compose(
             [
-                torchvision.transforms.RandomResizedCrop(size=size),
+                # torchvision.transforms.RandomCrop(size),
+                # 256/1600 = 0.16, 0.10 ~ 0.22
+                torchvision.transforms.RandomResizedCrop(size=size, scale=(0.1, 0.22)),
                 torchvision.transforms.RandomHorizontalFlip(),  # with 0.5 probability
                 torchvision.transforms.RandomApply([color_jitter], p=0.8),
                 torchvision.transforms.RandomGrayscale(p=0.2),
@@ -25,7 +27,8 @@ class TransformsSimCLR:
 
         self.test_transform = torchvision.transforms.Compose(
             [
-                torchvision.transforms.Resize(size=size),
+                torchvision.transforms.RandomCrop(size),
+                # torchvision.transforms.Resize(size=size),
                 torchvision.transforms.ToTensor(),
             ]
         )
