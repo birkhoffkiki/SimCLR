@@ -13,21 +13,21 @@ import os
 
 
 class CytoDataset(Dataset):
-    def __init__(self, root, json_file, transformers):
+    def __init__(self, root, transformers):
         self.root = root
         self.transformers = transformers
-        with open(json_file) as f:
-            files = json.load(f)
+        self.all_image_files = self.parser_files()
 
-        self.all_image_files = self.parser_files(files)
-
-    def parser_files(self, files: dict):
+    def parser_files(self):
         all_files = []
-        for d_type, s in files.items():
-            for slide, _ in s.items():
-                dir = os.path.join(self.root, d_type, slide)
-                img_files = os.listdir(dir)
-                all_files += [os.path.join(dir, i) for i in img_files]
+        for d_type in ['neg', 'pos']:
+            for tt in ['test', 'train']:
+                dir = os.path.join(self.root, d_type, tt)
+                slides = os.listdir(dir)
+                for slide in slides:
+                    fp = os.path.join(self.root, d_type, tt, dir, slide)
+                    images = os.listdir(fp)
+                    all_files += [os.path.join(fp, i) for i in images]
         return all_files
 
     def __len__(self):
@@ -36,9 +36,8 @@ class CytoDataset(Dataset):
     def __getitem__(self, item):
         path = self.all_image_files[item]
         img = Image.open(path)
-        for t in self.transformers:
-            img = t(img)
-        return img
+        img = self.transformers(img)
+        return img, 0
 
 
 

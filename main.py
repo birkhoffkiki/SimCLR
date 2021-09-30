@@ -21,6 +21,7 @@ from simclr.modules.sync_batchnorm import convert_model
 
 from model import load_optimizer, save_model
 from utils import yaml_config_hook
+from dataset import CytoDataset
 
 
 def train(args, train_loader, model, criterion, optimizer, writer):
@@ -54,6 +55,10 @@ def train(args, train_loader, model, criterion, optimizer, writer):
 
 
 def main(gpu, args):
+    # my config
+    data_root = '/mnt/diskarray/MILData'
+    json_file = '/mnt/diskarray/MILData/slide_dict_20210511.json'
+
     rank = args.nr * args.gpus + gpu
 
     if args.nodes > 1:
@@ -76,6 +81,8 @@ def main(gpu, args):
             download=True,
             transform=TransformsSimCLR(size=args.image_size),
         )
+    elif args.dataset == 'cytology':
+        train_dataset = CytoDataset(data_root, TransformsSimCLR(size=args.image_size))
     else:
         raise NotImplementedError
 
@@ -155,7 +162,7 @@ def main(gpu, args):
 
 
 if __name__ == "__main__":
-
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
     parser = argparse.ArgumentParser(description="SimCLR")
     config = yaml_config_hook("./config/config.yaml")
     for k, v in config.items():
